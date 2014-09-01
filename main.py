@@ -129,7 +129,7 @@ class ChatClient(object):
         # Enter the IOLoop. Not 100% what's going on here, needs more research.
         # Stolen from the Hangups example code.
         ioloop.IOLoop.instance().run_sync(self._client.connect)
-        iploop.IOLoop.instance().start()
+        ioloop.IOLoop.instance().start()
 
     def _on_connect(self):
         self._conv_list = hangups.ConversationList(self._client)
