@@ -93,9 +93,9 @@ class MessageParser(object):
                 intScore = int(score)
                 self._userDict[name.lower()] += intScore
                 returnString = ''.join(
-                    name.lower(),
+                    [name.lower(),
                     ': ',
-                    str(self._userDict[name.lower()])
+                    str(self._userDict[name.lower()])]
                     )
 
         return returnString
