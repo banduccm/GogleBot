@@ -1,3 +1,6 @@
+"""A Horrible Project based on the Hangups library
+"""
+
 import sys
 from tornado import ioloop
 import hangups
