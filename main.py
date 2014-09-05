@@ -37,29 +37,10 @@ class MessageParser(object):
         string.
         """
         returnString = ''
-        scoreEnd = 0
-        scoreStart = -1
-        scoreSign = ''
-
-        if '+' in msgString:
-            scoreSign = '+'
-            scoreStart = msgString.find('+')
-        elif '-' in msgString:
-            scoreSign = '-'
-            scoreStart = msgString.find('-')
-
-        scoreStart += 1
-
-        if scoreStart > 0:
-            scoreEnd = msgString.find(' ', scoreStart)
-
-            if (scoreEnd < 0):
-                # There is no space in the string after the sign, assume the
-                # score goes to the end of the string
-                returnString = scoreSign + msgString[scoreStart:]
-            else:
-                returnString = scoreSign + msgString[scoreStart:scoreEnd]
-
+        m = re.search("(?P<score>[\-|\+][0-9]+)", msgString)
+        if m:
+            returnString = m.group("score")
+            
         return returnString
 
     def parseMessage(self, chat_message):
