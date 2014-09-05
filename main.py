@@ -4,6 +4,7 @@
 import sys
 from tornado import ioloop
 import hangups
+import re
 
 
 class MessageParser(object):
@@ -23,24 +24,10 @@ class MessageParser(object):
         Returns an empty string if no @ is found in the input string.
         """
         returnString = ''
-        nameEnd = 0
-        nameStart = -1
-
-        if '@' in msgString:
-            nameStart = msgString.find('@')
-
-        nameStart += 1  # Increment the position by 1 to skip the @ sign
-
-        if nameStart > 0:
-            nameEnd = msgString.find(' ', nameStart)
-
-            if (nameEnd < 0):
-                # There is no space in the string after the @, assume that the
-                # name goes to the end of the string
-                returnString = msgString[nameStart:]
-            else:
-                returnString = msgString[nameStart:nameEnd]
-
+        m = re.search("@(?P<name>[a-zA-Z]+)", msgString)
+        if m:
+            returnString = m.group("name")
+        
         return returnString
 
     def findScoreInMessage(self, msgString):
@@ -83,20 +70,29 @@ class MessageParser(object):
         name = self.findNameInMessage(chat_message.text)
         score = self.findScoreInMessage(chat_message.text)
         if name:
-            if name.lower() not in self._userDict:
-                # Create the user key if it does not exist
-                self._userDict[name.lower()] = 0
-
-            if score:
-                # If both a name and score were found in the message text,
-                # update the dictionary and print the user's total score
-                intScore = int(score)
-                self._userDict[name.lower()] += intScore
-                returnString = ''.join(
-                    [name.lower(),
-                    ': ',
-                    str(self._userDict[name.lower()])]
-                    )
+            if name == "score":
+                for name in self._userDict:
+                    returnString += name + ": " + str(self._userDict[name]) + " | "
+            else:
+                if name.lower() not in self._userDict:
+                    # Create the user key if it does not exist
+                    self._userDict[name.lower()] = 0
+                
+                if score:
+                    # If both a name and score were found in the message text,
+                    # update the dictionary and print the user's total score
+                    intScore = 0
+                    try:
+                        intScore = int(score)
+                    except:
+                        returnString = "Invalid Score Format! Try <+/-><number>."
+                    else:
+                        self._userDict[name.lower()] += intScore
+                        returnString = ''.join(
+                            [name.lower(),
+                            ': ',
+                            str(self._userDict[name.lower()])]
+                            )
 
         return returnString
 
