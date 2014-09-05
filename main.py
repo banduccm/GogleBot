@@ -18,9 +18,21 @@ class MessageParser(object):
         """
         self._userDict = {}
 
+    def findCommandInMessage(self, msgString):
+        """Searches for a command by finding the first (if any) # in a string,
+        then getting all of the alpha characters immediately following the #.
+        Returns empty if no # is found in the input string.
+        """
+        returnString = ''
+        m = re.search("#(?P<cmd>[a-zA-Z_]+)", msgString)
+        if m:
+            returnString = m.group("cmd")
+
+        return returnString
+
     def findNameInMessage(self, msgString):
         """Searches for a name by finding the first (if any) @ in a string,
-        then grabbing any text between the @ and the next ' ' character.
+        then getting all of the alpha characters immediately following the @.
         Returns an empty string if no @ is found in the input string.
         """
         returnString = ''
@@ -32,9 +44,9 @@ class MessageParser(object):
 
     def findScoreInMessage(self, msgString):
         """Searches for a score by finding the first (if any) + or - in a
-        string, then grabbing any text between the +/- and the next ' '
-        character. Returns an empty string if no + or - is found in the input
-        string.
+        string, then getting all of the alpha characters immediately 
+        following the +/-. Returns an empty string if no + or - is found
+        in the input string.
         """
         returnString = ''
         m = re.search("(?P<score>[\-|\+][0-9]+)", msgString)
@@ -48,32 +60,38 @@ class MessageParser(object):
         up to date if necessary
         """
         returnString = ''
+
         name = self.findNameInMessage(chat_message.text)
         score = self.findScoreInMessage(chat_message.text)
+        command = self.findCommandInMessage(chat_message.text)
+            
         if name:
-            if name == "score":
+            if name.lower() not in self._userDict:
+                # Create the user key if it does not exist
+                self._userDict[name.lower()] = 0
+            
+            if score:
+                # If both a name and score were found in the message text,
+                # update the dictionary and print the user's total score
+                intScore = 0
+                try:
+                    intScore = int(score)
+                except:
+                    returnString = "Invalid Score Format! Try <+/-><number>."
+                else:
+                    self._userDict[name.lower()] += intScore
+                    returnString = ''.join(
+                        [name.lower(),
+                        ': ',
+                        str(self._userDict[name.lower()])]
+                        )
+
+        elif command:
+            if command == "score":
                 for name in self._userDict:
                     returnString += name + ": " + str(self._userDict[name]) + " | "
             else:
-                if name.lower() not in self._userDict:
-                    # Create the user key if it does not exist
-                    self._userDict[name.lower()] = 0
-                
-                if score:
-                    # If both a name and score were found in the message text,
-                    # update the dictionary and print the user's total score
-                    intScore = 0
-                    try:
-                        intScore = int(score)
-                    except:
-                        returnString = "Invalid Score Format! Try <+/-><number>."
-                    else:
-                        self._userDict[name.lower()] += intScore
-                        returnString = ''.join(
-                            [name.lower(),
-                            ': ',
-                            str(self._userDict[name.lower()])]
-                            )
+                returnString = "I don't know how to " + command + "."
 
         return returnString
 
