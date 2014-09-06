@@ -6,6 +6,7 @@ from tornado import ioloop
 import hangups
 import re
 import random
+import wikipedia
 
 
 class MessageParser(object):
@@ -60,7 +61,8 @@ class MessageParser(object):
         """Parses the "roll the dice" command by finding the desired die size
         then returning a random number from 1 to the found size. Thanks to
         Doug for the idea, which was lovingly ripped off. Returns an error
-        string if no valid die size is found."""
+        string if no valid die size is found.
+        """
         errorString = "Invalid die. Try #rtd d<number>."
         returnString = ''
         m = re.search("d(?P<die>[0-9]+)", msgString)
@@ -77,6 +79,16 @@ class MessageParser(object):
         else:
             returnString = errorString       
 
+        return returnString
+
+    def handleRandomCommand(self):
+        """Gets a random page from Wikipedia and prints the summary paragraph.
+        """
+        returnString = ""
+
+        pg = wikipedia.random(1)
+        returnString = wikipedia.summary(pg)
+                 
         return returnString
 
     def parseMessage(self, chat_message):
@@ -118,6 +130,8 @@ class MessageParser(object):
                 returnString = "Hot Asphalt"
             elif command == "rtd":
                 returnString = self.parseDieRoll(chat_message.text)
+            elif command == "random":
+                returnString = self.handleRandomCommand()
             else:
                 returnString = "I don't know how to " + command + "."
 
