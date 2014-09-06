@@ -5,6 +5,7 @@ import sys
 from tornado import ioloop
 import hangups
 import re
+import random
 
 
 class MessageParser(object):
@@ -24,7 +25,7 @@ class MessageParser(object):
         Returns empty if no # is found in the input string.
         """
         returnString = ''
-        m = re.search("#(?P<cmd>[a-zA-Z_]+)", msgString)
+        m = re.search("#(?P<cmd>[\w_]+)", msgString)
         if m:
             returnString = m.group("cmd")
 
@@ -53,6 +54,29 @@ class MessageParser(object):
         if m:
             returnString = m.group("score")
             
+        return returnString
+
+    def parseDieRoll(self, msgString):
+        """Parses the "roll the dice" command by finding the desired die size
+        then returning a random number from 1 to the found size. Thanks to
+        Doug for the idea, which was lovingly ripped off. Returns an error
+        string if no valid die size is found."""
+        errorString = "Invalid die. Try #rtd d<number>."
+        returnString = ''
+        m = re.search("d(?P<die>[0-9]+)", msgString)
+        if m:
+            try:
+                dieSize = int(m.group("die"))
+            except:
+                returnString = errorString
+            else:
+                if dieSize > 0:
+                    returnString = str(random.randint(1,dieSize))
+                else:
+                    returnString = errorString 
+        else:
+            returnString = errorString       
+
         return returnString
 
     def parseMessage(self, chat_message):
@@ -90,6 +114,10 @@ class MessageParser(object):
             if command == "score":
                 for name in self._userDict:
                     returnString += name + ": " + str(self._userDict[name]) + " | "
+            elif command == "3257":
+                returnString = "Hot Asphalt"
+            elif command == "rtd":
+                returnString = self.parseDieRoll(chat_message.text)
             else:
                 returnString = "I don't know how to " + command + "."
 
