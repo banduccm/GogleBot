@@ -41,12 +41,12 @@ class MessageParser(object):
         m = re.search("@(?P<name>[a-zA-Z]+)", msgString)
         if m:
             returnString = m.group("name")
-        
+
         return returnString
 
     def findScoreInMessage(self, msgString):
         """Searches for a score by finding the first (if any) + or - in a
-        string, then getting all of the alpha characters immediately 
+        string, then getting all of the alpha characters immediately
         following the +/-. Returns an empty string if no + or - is found
         in the input string.
         """
@@ -54,7 +54,7 @@ class MessageParser(object):
         m = re.search("(?P<score>[\-|\+][0-9]+)", msgString)
         if m:
             returnString = m.group("score")
-            
+
         return returnString
 
     def parseDieRoll(self, msgString):
@@ -73,11 +73,11 @@ class MessageParser(object):
                 returnString = errorString
             else:
                 if dieSize > 0:
-                    returnString = str(random.randint(1,dieSize))
+                    returnString = str(random.randint(1, dieSize))
                 else:
-                    returnString = errorString 
+                    returnString = errorString
         else:
-            returnString = errorString       
+            returnString = errorString
 
         return returnString
 
@@ -88,7 +88,7 @@ class MessageParser(object):
 
         pg = wikipedia.random(1)
         returnString = wikipedia.summary(pg)
-                 
+
         return returnString
 
     def parseMessage(self, chat_message):
@@ -100,12 +100,12 @@ class MessageParser(object):
         name = self.findNameInMessage(chat_message.text)
         score = self.findScoreInMessage(chat_message.text)
         command = self.findCommandInMessage(chat_message.text)
-            
+
         if name:
             if name.lower() not in self._userDict:
                 # Create the user key if it does not exist
                 self._userDict[name.lower()] = 0
-            
+
             if score:
                 # If both a name and score were found in the message text,
                 # update the dictionary and print the user's total score
@@ -118,14 +118,15 @@ class MessageParser(object):
                     self._userDict[name.lower()] += intScore
                     returnString = ''.join(
                         [name.lower(),
-                        ': ',
-                        str(self._userDict[name.lower()])]
+                            ': ',
+                            str(self._userDict[name.lower()])]
                         )
 
         elif command:
             if command == "score":
-                for name in self._userDict:
-                    returnString += name + ": " + str(self._userDict[name]) + " | "
+                returnString = " | ".join(name + ": " +
+                                          str(self._userDict[name])
+                                          for name in self._userDict)
             elif command == "3257":
                 returnString = "Hot Asphalt"
             elif command == "rtd":

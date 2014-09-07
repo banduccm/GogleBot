@@ -19,7 +19,7 @@ setup(
     package_dir={'GogleBot': ''},
     packages=['GogleBot'],
     install_requires=[
-        'hangups == 0.1.3'
-        'wikipedia == 1.3.1'
+        'hangups == 0.1.3',
+        'wikipedia == 1.3.1',
     ],
 )
