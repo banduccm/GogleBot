@@ -19,7 +19,7 @@ class MessageParser(object):
         """Constructor:
         Initialise the user dictionary, used for keeping score
         """
-        # Create the user key if it does not exist
+        # Default all user scores to 0
         self._userDict = defaultdict(int)
 
     def findCommandInMessage(self, msgString):
@@ -28,7 +28,7 @@ class MessageParser(object):
         Returns empty if no # is found in the input string.
         """
         returnString = ''
-        m = re.search("#(?P<cmd>[\w_]+)", msgString)
+        m = re.search("#(?P<cmd>[a-zA-Z0-9_]+)", msgString)
         if m:
             returnString = m.group("cmd")
 
@@ -53,7 +53,7 @@ class MessageParser(object):
         in the input string.
         """
         returnString = ''
-        m = re.search("(?P<score>[\-|\+][0-9]+)", msgString)
+        m = re.search("(?P<score>[\-\+][0-9]+)", msgString)
         if m:
             returnString = m.group("score")
 
@@ -89,7 +89,10 @@ class MessageParser(object):
         returnString = ""
 
         pg = wikipedia.random(1)
-        returnString = wikipedia.summary(pg)
+        try:
+            returnString = wikipedia.summary(pg)
+        except wikipedia.exceptions.DisambiguationError:
+            returnString = self.handleRandomCommand()
 
         return returnString
 
@@ -100,10 +103,10 @@ class MessageParser(object):
         returnString = ''
 
         name = self.findNameInMessage(chat_message.text)
-        score = self.findScoreInMessage(chat_message.text)
         command = self.findCommandInMessage(chat_message.text)
 
         if name:
+            score = self.findScoreInMessage(chat_message.text)
             if score:
                 # If both a name and score were found in the message text,
                 # update the dictionary and print the user's total score
