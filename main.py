@@ -89,7 +89,10 @@ class MessageParser(object):
         returnString = ""
 
         pg = wikipedia.random(1)
-        returnString = wikipedia.summary(pg)
+        try:
+            returnString = wikipedia.summary(pg)
+        except wikipedia.exceptions.DisambiguationError:
+            returnString = self.handleRandomCommand()
 
         return returnString
 
