@@ -28,7 +28,7 @@ class MessageParser(object):
         Returns empty if no # is found in the input string.
         """
         returnString = ''
-        m = re.search("#(?P<cmd>[\w_]+)", msgString)
+        m = re.search("#(?P<cmd>[a-zA-Z0-9_]+)", msgString)
         if m:
             returnString = m.group("cmd")
 
@@ -53,7 +53,7 @@ class MessageParser(object):
         in the input string.
         """
         returnString = ''
-        m = re.search("(?P<score>[\-|\+][0-9]+)", msgString)
+        m = re.search("(?P<score>[\-\+][0-9]+)", msgString)
         if m:
             returnString = m.group("score")
 
