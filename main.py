@@ -2,11 +2,12 @@
 """
 
 import sys
-from tornado import ioloop
 import hangups
 import re
 import random
 import wikipedia
+from tornado import ioloop
+from collections import defaultdict
 
 
 class MessageParser(object):
@@ -18,7 +19,8 @@ class MessageParser(object):
         """Constructor:
         Initialise the user dictionary, used for keeping score
         """
-        self._userDict = {}
+        # Create the user key if it does not exist
+        self._userDict = defaultdict(int)
 
     def findCommandInMessage(self, msgString):
         """Searches for a command by finding the first (if any) # in a string,
@@ -102,10 +104,6 @@ class MessageParser(object):
         command = self.findCommandInMessage(chat_message.text)
 
         if name:
-            if name.lower() not in self._userDict:
-                # Create the user key if it does not exist
-                self._userDict[name.lower()] = 0
-
             if score:
                 # If both a name and score were found in the message text,
                 # update the dictionary and print the user's total score
@@ -115,18 +113,18 @@ class MessageParser(object):
                 except:
                     returnString = "Invalid Score Format! Try <+/-><number>."
                 else:
-                    self._userDict[name.lower()] += intScore
-                    returnString = ''.join(
-                        [name.lower(),
-                            ': ',
-                            str(self._userDict[name.lower()])]
+                    lname = name.lower()
+                    self._userDict[lname] += intScore
+                    returnString = '{}: {}'.format(
+                        lname,
+                        self._userDict[lname]
                         )
 
         elif command:
             if command == "score":
-                returnString = " | ".join(name + ": " +
-                                          str(self._userDict[name])
-                                          for name in self._userDict)
+                returnString = ' | '.join(
+                    '{}: {}'.format(*item) for item in self._userDict.items()
+                    )
             elif command == "3257":
                 returnString = "Hot Asphalt"
             elif command == "rtd":
@@ -134,7 +132,7 @@ class MessageParser(object):
             elif command == "random":
                 returnString = self.handleRandomCommand()
             else:
-                returnString = "I don't know how to " + command + "."
+                returnString = "I don't know how to {}.".format(command)
 
         return returnString
 

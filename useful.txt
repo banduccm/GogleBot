@@ -1,5 +1,0 @@
-# List of useful packages for easy installation with the following command:
-# pip3 install -r useful.txt
-
-flake8
-virtualenv
