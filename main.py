@@ -19,7 +19,7 @@ class MessageParser(object):
         """Constructor:
         Initialise the user dictionary, used for keeping score
         """
-        # Create the user key if it does not exist
+        # Default all user scores to 0
         self._userDict = defaultdict(int)
 
     def findCommandInMessage(self, msgString):
