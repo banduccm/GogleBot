@@ -100,10 +100,10 @@ class MessageParser(object):
         returnString = ''
 
         name = self.findNameInMessage(chat_message.text)
-        score = self.findScoreInMessage(chat_message.text)
         command = self.findCommandInMessage(chat_message.text)
 
         if name:
+            score = self.findScoreInMessage(chat_message.text)
             if score:
                 # If both a name and score were found in the message text,
                 # update the dictionary and print the user's total score
