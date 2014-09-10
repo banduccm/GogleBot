@@ -96,6 +96,38 @@ class MessageParser(object):
 
         return returnString
 
+    def cAtFaCtS(self):
+        """Thanks for signing up for Cat Facts! ..
+        """
+        returnString = ""
+        
+        facts = open("catfacts.txt", "r")
+        catlines = facts.read()        
+
+        catlinesSplit = catlines.split(";")
+
+        returnString = random.choice(catlinesSplit)
+
+        facts.close() 
+
+        return returnString
+
+    def chuck(self):
+        """Chuck Norris Facts ..
+        """
+        returnString = ""
+        
+        facts = open("chucknorris.txt", "r")
+        chucklines = facts.read()        
+
+        chucklinesSplit = chucklines.split(";")
+
+        returnString = random.choice(chucklinesSplit)
+
+        facts.close() 
+
+        return returnString
+
     def parseMessage(self, chat_message):
         """Parses the input chat message object's text and keeps the user score
         up to date if necessary
@@ -134,6 +166,10 @@ class MessageParser(object):
                 returnString = self.parseDieRoll(chat_message.text)
             elif command == "random":
                 returnString = self.handleRandomCommand()
+            elif command == "catfacts":
+                returnString = self.cAtFaCtS()
+            elif command == "chucknorris":
+                returnString = self.chuck()
             else:
                 returnString = "I don't know how to {}.".format(command)
 
@@ -156,9 +192,9 @@ class ChatClient(object):
             cookies = hangups.get_auth_stdin('c.txt')
         except hangups.GoogleAuthError as e:
             print('Login failed ({})'.format(e))
-            sys.exit(1
+            sys.exit(1)
         else:
-		    print('Login Successful!')
+            print('Login Successful!')
 
         # Initialize the Hangups client using the credentials collected above
         # and the callbacks defined in this class
