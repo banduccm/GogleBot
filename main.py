@@ -156,7 +156,9 @@ class ChatClient(object):
             cookies = hangups.get_auth_stdin('c.txt')
         except hangups.GoogleAuthError as e:
             print('Login failed ({})'.format(e))
-            sys.exit(1)
+            sys.exit(1
+        else:
+		    print('Login Successful!')
 
         # Initialize the Hangups client using the credentials collected above
         # and the callbacks defined in this class
