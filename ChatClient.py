@@ -35,7 +35,15 @@ class ChatClient(object):
 
         # Enter the IOLoop. Not 100% what's going on here, needs more research.
         # Stolen from the Hangups example code.
-        ioloop.IOLoop.instance().run_sync(self._client.connect)
+        try:
+            ioloop.IOLoop.instance().run_sync(self._client.connect)
+        except ioloop.TimeoutError:
+            # Ignore spurious timeout when there's another exception.
+            pass
+        # Raise exception if there was one.
+        if self._exception:
+            exc, self._exception = self._exception, None
+            
         ioloop.IOLoop.instance().start()
 
     def _on_connect(self):
