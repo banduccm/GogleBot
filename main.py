@@ -1,5 +1,6 @@
 """A Horrible Project based on the Hangups library
 """
+
 import ChatClient
 
 def main():
